@@ -16,6 +16,9 @@ import torch.nn.functional as F
 
 from torchvision import transforms
 
+from sklearn.neighbors import KernelDensity
+from denseweight import DenseWeight
+
 from tqdm import tqdm
 
 from model import UNet
@@ -27,20 +30,17 @@ import pdb
 
 from collections import Counter
 
-def calculate_class_imbalance(dataset, device):
-    class_counts = Counter()
+def weighted_mse_loss(): # TODO: inputs?
+    # Randomly sample from masks
+    train_dataset, val_dataset, test_dataset = get_train_val_datasets()
+
+    # TODO: use bayes to figure out how many sample to take
     
-    for _, mask in tqdm(dataset, desc="Calculating class imbalance"):
-        unique, counts = torch.unique(mask, return_counts=True)
-        for u, c in zip(unique.tolist(), counts.tolist()):
-            class_counts[u] += c
-    
-    total_pixels = sum(class_counts.values())
-    class_weights = {cls: total_pixels / count for cls, count in class_counts.items()}
-    
-    # Convert class_weights to 1D tensor
-    class_weights = torch.tensor([class_weights[key] for key in sorted(class_weights)])
-    return class_counts, class_weights.to(device)
+    dw = DenseWeight(alpha=1.0)
+    weights = dw.fit(y)
+
+    ## Calculate the weight for an arbitrary target value
+    #weights = dw([0.1206])
 
 def get_train_val_datasets(seed=42):
     # Initialize the dataset
@@ -75,11 +75,8 @@ def train_model(model, device, num_epochs=300):
     val_dataloader = DataLoader(val_dataset)
     test_dataloader = DataLoader(test_dataset)
 
-    # Calculate class imbalance on training dataset
-    train_class_counts, train_class_weights = calculate_class_imbalance(train_dataset, device)
-    train_class_weights = train_class_weights.to(device)  # Ensure weights are on the same device
-    loss_function = nn.CrossEntropyLoss(weight=train_class_weights)
-    optimizer = optim.Adam(model.parameters(), lr=1e-4)
+    # Prepare loss function weights, weighted by density of values using DenseWeights
+    
 
     patience = 3  # Number of epochs to wait before stopping
     best_val_loss = np.inf

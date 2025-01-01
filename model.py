@@ -1,5 +1,5 @@
 """
-U-Net model adapted from https://github.com/milesial/Pytorch-UNet/blob/master/unet/unet_parts.py
+U-Net model adapted for regression from https://github.com/milesial/Pytorch-UNet/blob/master/unet/unet_parts.py
 """
 
 import numpy as np
