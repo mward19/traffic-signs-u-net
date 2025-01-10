@@ -16,7 +16,7 @@ def viz_eval(model, dataset):
 
         # Convert to numpy ndarrays for plotting
         image = image.numpy()
-        pred = pred.detach().numpy()[0, 1] # There's only one sample, in which the first index is just the background mask
+        pred = pred.detach().numpy()[0, 0] # There's only one sample
 
         fig, ax = plt.subplots(1, 2)
         
@@ -31,8 +31,8 @@ def viz_eval(model, dataset):
 
 if __name__ == '__main__':
     print("Beginning evaluation...")
-    model = UNet(3, 2)
-    model.load_state_dict(torch.load('/home/mward19/Documents/kaggle_traffic_signs/model_data/20250101_125437_unet_model_epoch_10.pth', weights_only=True))
+    model = UNet(3, 1)
+    model.load_state_dict(torch.load('/home/mward19/Documents/kaggle_traffic_signs/model_data/20250108_182012_best_unet_model.pth', weights_only=True))
     model.eval()
 
     train_dataset, val_dataset, test_dataset = get_train_val_datasets()
