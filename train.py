@@ -52,46 +52,16 @@ def get_train_val_datasets(seed=42):
     train_dataset, val_dataset = random_split(train_dataset_all, [train_size, val_size])
 
     return train_dataset, val_dataset, test_dataset
-    
-def calc_weights(dataset):
-    # Sample some training masks
-    gen = np.random.default_rng()
-    n_sample_masks = int(len(dataset) / 10) # TODO: use bayes to figure out how many samples to take
-    sample_items = gen.choice(len(dataset), n_sample_masks, replace=False)
-    sample_masks = [dataset[i][1] for i in sample_items] # Extract ground truth masks
 
-    # From the sample masks, extract a few values
-    n_sample_vals = int(sample_masks[0].shape[0] * sample_masks[0].shape[1] / 50) # TODO: use bayes to figure out how many samples to take from each mask
-    samples = []
-    for mask in tqdm(sample_masks, desc='Calculating training weights'):
-        flat_mask = mask.flatten()
-        sample_indices = gen.choice(len(flat_mask), n_sample_vals, replace=False)
-        samples += flat_mask[sample_indices]
-
-    # Calculate weights
-    samples = np.array(samples)
-    pdb.set_trace()
-    dw = DenseWeight(alpha=1.0)
-    weights = dw.fit(samples)
-
-    i_range = np.linspace(0, 1)
-    plt.plot(i_range, [dw([i]) for i in i_range])
-    plt.savefig('temp/weights.png')
-    return dw
-
-# Calculate and store mean-squared error loss weights for use in loss function
-TRAIN_WEIGHT_FUNC = calc_weights(get_train_val_datasets()[0])
-
-def weighted_mse_loss(input, target):
+def weighted_bce(input, target):
     # Get the weights as a NumPy array and convert it to a tensor on the same device as `input`
     target_cpu = target.cpu().numpy()
-    weights = TRAIN_WEIGHT_FUNC(target_cpu).reshape(target_cpu.shape)  # Convert target to NumPy array on CPU
+    # Weight should be high when prob is near one, low otherwise. Search over params?
+    s = 100 # Scale. Really ought to be calculated based on the data
+    weights = 1 + s*(target_cpu)**2 
     weights = torch.tensor(weights, dtype=input.dtype, device=input.device)  # Directly create tensor on the correct device
-
-    # Compute the weighted MSE loss
-    #pdb.set_trace()
-    loss = F.mse_loss(input.squeeze(1), target, reduction='none')  # Element-wise MSE loss
-    return (weights * loss).mean()  # Weighted average of the MSE loss
+    loss = F.binary_cross_entropy_with_logits(input.squeeze(1), target, weight=weights)
+    return loss
 
 def train_model(model, device, num_epochs=300):
     # For now, just train once on the whole train set and validate with the validation set. 
@@ -104,7 +74,7 @@ def train_model(model, device, num_epochs=300):
     test_dataloader = DataLoader(test_dataset)
 
     # Prepare loss function weights, weighted by density of values using DenseWeights
-    loss_function = weighted_mse_loss
+    loss_function = weighted_bce
     optimizer = optim.Adam(model.parameters(), lr=1e-4)
 
     patience = 3  # Number of epochs to wait before stopping

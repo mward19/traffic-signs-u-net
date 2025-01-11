@@ -32,7 +32,7 @@ def viz_eval(model, dataset):
 if __name__ == '__main__':
     print("Beginning evaluation...")
     model = UNet(3, 1)
-    model.load_state_dict(torch.load('/home/mward19/Documents/kaggle_traffic_signs/model_data/20250108_182012_best_unet_model.pth', weights_only=True))
+    model.load_state_dict(torch.load('/home/mward19/Documents/kaggle_traffic_signs/model_data/20250110_173300_unet_model_epoch_10.pth', weights_only=True))
     model.eval()
 
     train_dataset, val_dataset, test_dataset = get_train_val_datasets()
