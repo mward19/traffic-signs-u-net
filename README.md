@@ -14,4 +14,4 @@ To summarize, the current pipeline is as follows:
 
 *** 
 
-Although a YOLO model or a similar approach might efficiently solve the problem of detecting traffic signs in images, my focus on traffic signs serves a different purpose&mdash;as a surrogate problem for identifying flagellar motors and other structures in 3D tomograms. I suspect that the flexibility of the U-Net, the ease with which it can be adjusted to 3D images, and its ability (when used in this way) to output an arbitrary number of keypoints makes it a reasonable choice.
+Although a YOLO model or a similar approach would undeniably be a better approach to solve the problem of detecting traffic signs in images, my focus on traffic signs serves a different purpose&mdash;as a surrogate problem for identifying flagellar motors and other structures in 3D tomograms. I suspect that the flexibility of the U-Net, the ease with which it can be adjusted to 3D images, and its ability (when used in this way) to output an arbitrary number of keypoints makes it a reasonable choice.
