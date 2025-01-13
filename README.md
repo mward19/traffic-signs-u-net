@@ -16,7 +16,7 @@ A few predictions from the validation set are in the `model_eval` directory, if 
 
 Next steps:
 - Data augmentation, lots of it
-- Hyperparameter optimization (or for some, just more intelligent ways of choosing would help. Many choices are arbitrary right now)
+- Hyperparameter optimization (or for some hyperparameters, just more intelligent ways of choosing would help. Many choices are arbitrary right now)
 - Eventually, scale to 3D and train on tomograms
 
 *** 
