@@ -12,6 +12,13 @@ To summarize, the current pipeline is as follows:
 
 ![An example prediction](example_model_eval.png)
 
+A few predictions from the validation set are in the `model_eval` directory, if you'd like to peek at how it's doing right now.
+
+Next steps:
+- Data augmentation, lots of it
+- Hyperparameter optimization (or for some, just more intelligent ways of choosing would help. Many choices are arbitrary right now)
+- Eventually, scale to 3D and train on tomograms
+
 *** 
 
 Although a YOLO model or a similar approach would undeniably be a better approach to solve the problem of detecting traffic signs in images, my focus on traffic signs serves a different purpose&mdash;as a surrogate problem for identifying flagellar motors and other structures in 3D tomograms. I suspect that the flexibility of the U-Net, the ease with which it can be adjusted to 3D images, and its ability (when used in this way) to output an arbitrary number of keypoints makes it a reasonable choice.
