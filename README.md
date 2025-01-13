@@ -1,9 +1,9 @@
 I'm working on a U-Net model adjusted to output keypoints in an image. Right now I'm training it on a [dataset of traffic signs from Kaggle](https://www.kaggle.com/datasets/raduoprea/traffic-signs). I hope to extend the model to 3D and use it to locate flagellar motors. There are anywhere from none to a dozen flagellar motors in the tomograms I work with, and I hope that a U-Net will capture the complexity of the problem and allow for an arbitrary number of output keypoints.
 
 To summarize, the current pipeline is as follows:
-First, convert the ground truth points that mark signs into "Gaussian"-looking masks (they're actually cones). Below is an example, except since signs aren't that big, in reality the cones are smaller.
+First, convert the ground truth points that mark signs into "Gaussian"-looking masks (they're actually cones). Below is a training mask for a picture with two signs.
 
-![An example mask](cones.png)
+![An example mask](example_mask.png)
 
 - Train a U-Net with only one output mask channel on the masks generated previously, with a logistic binary cross-entropy loss function. Thus the U-Net learns to output logits representing how far away the nearest sign is, with smaller logits implying that no sign is nearby, and large logits denoting a sign.
 
