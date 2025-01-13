@@ -57,7 +57,7 @@ def weighted_bce(input, target):
     # Get the weights as a NumPy array and convert it to a tensor on the same device as `input`
     target_cpu = target.cpu().numpy()
     # Weight should be high when prob is near one, low otherwise. Search over params?
-    s = 100 # Scale. Really ought to be calculated based on the data
+    s = 10 # Scale. Really ought to be calculated based on the data
     weights = 1 + s*(target_cpu)**2 
     weights = torch.tensor(weights, dtype=input.dtype, device=input.device)  # Directly create tensor on the correct device
     loss = F.binary_cross_entropy_with_logits(input.squeeze(1), target, weight=weights)
@@ -67,6 +67,7 @@ def train_model(model, device, num_epochs=300):
     # For now, just train once on the whole train set and validate with the validation set. 
     # Later I'll do better data augmentation, cross-validation, and such
     train_dataset, val_dataset, test_dataset = get_train_val_datasets()
+    print(len(train_dataset))
 
     # Prepare to load data
     train_dataloader = DataLoader(train_dataset, batch_size=4)

@@ -6,4 +6,4 @@ Realized DenseWeights and MSE is a bad idea. Cross entropy is better suited to p
 
 Earlier I was training it to output raw probabilities. Should've outputted logits. Oops.
 
-In the future to calculate `s`, maybe invert the KDE and offset by something? Ask the group once this works.
+In the future to calculate `s`, maybe invert the KDE and offset by something? Ask the group once this works. This controls how it weights false positives.
