@@ -2,7 +2,7 @@ I'm working on a U-Net model adjusted to output keypoints in an image. Right now
 
 To summarize, the current pipeline is as follows:
 
-- Convert the ground truth points that mark signs into "Gaussian"-looking masks (they're actually cones). Below is a training mask for a picture with two signs.
+- Convert the ground truth points that mark signs with "Gaussian"-looking masks (they're actually cones). Below is a training mask for a picture with two signs.
 
 ![An example mask](example_mask.png)
 
