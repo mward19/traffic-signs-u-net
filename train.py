@@ -17,7 +17,6 @@ import torch.nn.functional as F
 from torchvision import transforms
 
 from sklearn.neighbors import KernelDensity
-from denseweight import DenseWeight
 
 from tqdm import tqdm
 

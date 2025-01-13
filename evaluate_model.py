@@ -43,7 +43,7 @@ def viz_eval(model, dataset):
         mask_image = ax[1].imshow(pred, cmap='viridis')
         fig.colorbar(mask_image, ax=ax[1], orientation='vertical', fraction=0.05, pad=0.04)
 
-        fig.savefig(f'temp/model_eval_{i}.png')
+        fig.savefig(f'model_eval/model_eval_{i}.png')
 
 if __name__ == '__main__':
     print("Beginning evaluation...")
