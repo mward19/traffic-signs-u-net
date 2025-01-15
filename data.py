@@ -76,7 +76,7 @@ def get_mask(labels, image_shape, cone=True):
         else:
             mask[x_pos - x_size : x_pos + x_size + 1, y_pos - y_size : y_pos + y_size + 1] = category
 
-    return torch.tensor(mask.T, dtype=torch.float32) 
+    return mask.T
 
 if __name__ == "__main__":
     #print(create_cone_mask(np.array([5, 5]), [10, 10], 3))
@@ -122,22 +122,21 @@ class SignDataset(Dataset):
             ], dtype=torch.float32)
             labels.append((category, bbox))
 
-        # Get label mask
-        mask = get_mask(labels, image.shape[1:])
-        
         # Load image
         img_path = os.path.join(self.image_dir, self.image_filenames[idx])
-        image = Image.open(img_path).convert("RGB")
+        image = np.array(Image.open(img_path).convert("RGB"))
+
+        # Get label mask
+        mask = get_mask(labels, image.shape[:2])
 
         # Apply transforms to both image and mask
         if self.transform:
             transformed = self.transform(image=image, mask=mask)
             image = transformed['image']
             mask = transformed['mask']
-        else:
-            # Default transformation to a tensor
-            image = transforms.ToTensor()(image)
-        
-        # Return image and label mask (category as integer, mask as float tensor)
-        return image, get_mask(labels, image.shape[1:])
+        # Convert image and mask to tensor
+        image = transforms.ToTensor()(image)
+        mask = torch.tensor(mask, dtype=torch.float32) 
+        # Return image and label mask (mask as float tensor)
+        return image, mask
 

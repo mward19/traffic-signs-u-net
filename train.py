@@ -16,6 +16,7 @@ import torch.nn.functional as F
 
 from torchvision import transforms
 import albumentations as A
+os.environ['NO_ALBUMENTATIONS_UPDATE'] = '1'
 
 from sklearn.neighbors import KernelDensity
 
@@ -32,12 +33,17 @@ from collections import Counter
 
 def get_train_val_datasets(seed=42):
     # Initialize the train dataset, along with appropriate augmentations
-    transform = A.compose([
-        A.RandomCrop(width=256, height=256),
-        A.Rotate(limit=180),
-        A.AdvancedBlur(),
-        A.CoarseDropout()
-    ])
+    transform = A.Compose([
+        A.RandomCrop(width=512, height=512),
+        A.Rotate(limit=180, p=1.),
+        A.AdvancedBlur(blur_limit=(9, 17), sigma_x_limit=(0.5, 4), sigma_y_limit=(0.5, 4), p=1.),
+        A.CoarseDropout(
+            num_holes_range=(200, 300), 
+            hole_height_range=(0.01, 0.05), 
+            hole_width_range=(0.01, 0.05), 
+            p=1
+        )
+    ], is_check_shapes=False)
     train_dataset_all = SignDataset(
         'Traffic Signs/train/images',
         'Traffic Signs/train/labels',
