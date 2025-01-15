@@ -86,29 +86,30 @@ if __name__ == "__main__":
 
 
 class SignDataset(Dataset):
-    def __init__(self, image_dir, label_dir, transform=None):
+    def __init__(self, image_paths, label_paths, transform=None):
         """
         Args:
-            image_dir (str): Directory with all the images.
-            label_dir (str): Directory with all the labels.
+            image_paths (list): List of file paths to the images.
+            label_paths (list): List of file paths to the labels.
             transform (callable, optional): Optional transform to be applied
                 on an image.
         """
-        self.image_dir = image_dir
-        self.label_dir = label_dir
+        self.image_paths = image_paths
+        self.label_paths = label_paths
         self.transform = transform
-        self.image_filenames = sorted(os.listdir(image_dir))
-        self.label_filenames = sorted(os.listdir(label_dir))
-        
-    def __len__(self):
-        return len(self.image_filenames)
 
-    def __getitem__(self, idx):      
+        if len(self.image_paths) != len(self.label_paths):
+            raise ValueError("The number of image paths and label paths must be the same.")
+
+    def __len__(self):
+        return len(self.image_paths)
+
+    def __getitem__(self, idx):
         # Load label
-        label_path = os.path.join(self.label_dir, self.label_filenames[idx])
+        label_path = self.label_paths[idx]
         with open(label_path, "r") as f:
             labels_raw = [line.split(' ') for line in f.read().strip().split('\n')]
-        
+
         labels = []
         for label_raw in labels_raw:
             if len(label_raw) != 5:
@@ -123,7 +124,7 @@ class SignDataset(Dataset):
             labels.append((category, bbox))
 
         # Load image
-        img_path = os.path.join(self.image_dir, self.image_filenames[idx])
+        img_path = self.image_paths[idx]
         image = np.array(Image.open(img_path).convert("RGB"))
 
         # Get label mask
@@ -134,9 +135,12 @@ class SignDataset(Dataset):
             transformed = self.transform(image=image, mask=mask)
             image = transformed['image']
             mask = transformed['mask']
+
         # Convert image and mask to tensor
         image = transforms.ToTensor()(image)
-        mask = torch.tensor(mask, dtype=torch.float32) 
+        mask = torch.tensor(mask, dtype=torch.float32)
+
         # Return image and label mask (mask as float tensor)
         return image, mask
+
 

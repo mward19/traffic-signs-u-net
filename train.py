@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import os
+import glob
 from PIL import Image
 from matplotlib import pyplot as plt
 
@@ -13,6 +14,8 @@ from torch.utils.data import random_split
 import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
+
+from sklearn.model_selection import train_test_split
 
 from torchvision import transforms
 import albumentations as A
@@ -31,38 +34,42 @@ import pdb
 
 from collections import Counter
 
-def get_train_val_datasets(seed=42):
+def get_train_val_datasets(seed=42, augment=True):
     # Initialize the train dataset, along with appropriate augmentations
     transform = A.Compose([
-        A.RandomCrop(width=512, height=512),
-        A.Rotate(limit=180, p=1.),
-        A.AdvancedBlur(blur_limit=(9, 17), sigma_x_limit=(0.5, 4), sigma_y_limit=(0.5, 4), p=1.),
-        A.CoarseDropout(
-            num_holes_range=(200, 300), 
-            hole_height_range=(0.01, 0.05), 
-            hole_width_range=(0.01, 0.05), 
-            p=1
-        )
+        A.RandomCrop(width=512, height=512, p=1.),
+        A.Rotate(limit=180, p=0.75),
+        A.AdvancedBlur(blur_limit=(9, 17), sigma_x_limit=(0.5, 4), sigma_y_limit=(0.5, 4), p=0.8),
+        A.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.25, p=1.0)
     ], is_check_shapes=False)
-    train_dataset_all = SignDataset(
-        'Traffic Signs/train/images',
-        'Traffic Signs/train/labels',
+
+    # Collect training data
+    train_image_paths = sorted(glob.glob('Traffic Signs/train/images/*.jpg'))
+    train_label_paths = sorted(glob.glob('Traffic Signs/train/labels/*.txt'))
+
+    assert len(train_image_paths) == len(train_label_paths)
+
+    # Select data for validation set
+    X_train, X_val, y_train, y_val = train_test_split(train_image_paths, train_label_paths, train_size=0.8)
+
+    train_dataset = SignDataset(
+        X_train,
+        y_train,
         transform
     )
-    # Initialize the test dataset
-    test_dataset = SignDataset(
-        'Traffic Signs/valid/images',
-        'Traffic Signs/valid/labels',
+
+    val_dataset = SignDataset(
+        X_val,
+        y_val,
         None
     )
-    
-    # Random seed for reproducibility
-    torch.manual_seed(seed)
 
-    val_size = int(0.2 * len(train_dataset_all))
-    train_size = len(train_dataset_all) - val_size
-
-    train_dataset, val_dataset = random_split(train_dataset_all, [train_size, val_size])
+    # Initialize the test dataset
+    test_dataset = SignDataset(
+        glob.glob('Traffic Signs/valid/images/*.jpg'),
+        glob.glob('Traffic Signs/valid/labels/*.txt'),
+        None
+    )
 
     return train_dataset, val_dataset, test_dataset
 

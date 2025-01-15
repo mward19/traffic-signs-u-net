@@ -2,6 +2,10 @@ from train import get_train_val_datasets
 from matplotlib import pyplot as plt
 import numpy as np
 import pdb
+from tqdm import tqdm
+
+import os
+os.environ['NO_ALBUMENTATIONS_UPDATE'] = '1'
 
 def see_image_and_mask(dataset, index):
     # Load an image and its mask
@@ -19,5 +23,5 @@ def see_image_and_mask(dataset, index):
 
 if __name__ == '__main__':
     train_set, val_set, _ = get_train_val_datasets()
-    for index in range(25, 45):
+    for index in tqdm(range(25, 45)):
         see_image_and_mask(train_set, index)
