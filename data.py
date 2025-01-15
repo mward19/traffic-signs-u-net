@@ -103,22 +103,11 @@ class SignDataset(Dataset):
     def __len__(self):
         return len(self.image_filenames)
 
-    def __getitem__(self, idx):
-        # Load image
-        img_path = os.path.join(self.image_dir, self.image_filenames[idx])
-        image = Image.open(img_path).convert("RGB")
-        
+    def __getitem__(self, idx):      
         # Load label
         label_path = os.path.join(self.label_dir, self.label_filenames[idx])
         with open(label_path, "r") as f:
             labels_raw = [line.split(' ') for line in f.read().strip().split('\n')]
-        
-        # Apply transforms
-        if self.transform:
-            image = self.transform(image)
-        else:
-            # Default transformation to a tensor
-            image = transforms.ToTensor()(image)
         
         labels = []
         for label_raw in labels_raw:
@@ -133,6 +122,22 @@ class SignDataset(Dataset):
             ], dtype=torch.float32)
             labels.append((category, bbox))
 
+        # Get label mask
+        mask = get_mask(labels, image.shape[1:])
+        
+        # Load image
+        img_path = os.path.join(self.image_dir, self.image_filenames[idx])
+        image = Image.open(img_path).convert("RGB")
+
+        # Apply transforms to both image and mask
+        if self.transform:
+            transformed = self.transform(image=image, mask=mask)
+            image = transformed['image']
+            mask = transformed['mask']
+        else:
+            # Default transformation to a tensor
+            image = transforms.ToTensor()(image)
+        
         # Return image and label mask (category as integer, mask as float tensor)
         return image, get_mask(labels, image.shape[1:])
 

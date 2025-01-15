@@ -10,3 +10,6 @@ In the future to calculate `s`, maybe invert the KDE and offset by something? As
 
 # Jan 13. 
 Using cross entropy loss now. Some parameters were set pretty arbitrarily, like the logit cutoff to be considered a sign. Works to some degree though. Time to clean up and augment.
+
+# Jan 14
+Learned about Albumentations. It can augment my masks alongside the original images, apparently. It also has transforms for 3D images.

@@ -15,6 +15,7 @@ import torch.optim as optim
 import torch.nn.functional as F
 
 from torchvision import transforms
+import albumentations as A
 
 from sklearn.neighbors import KernelDensity
 
@@ -30,12 +31,19 @@ import pdb
 from collections import Counter
 
 def get_train_val_datasets(seed=42):
-    # Initialize the dataset
+    # Initialize the train dataset, along with appropriate augmentations
+    transform = A.compose([
+        A.RandomCrop(width=256, height=256),
+        A.Rotate(limit=180),
+        A.AdvancedBlur(),
+        A.CoarseDropout()
+    ])
     train_dataset_all = SignDataset(
         'Traffic Signs/train/images',
         'Traffic Signs/train/labels',
-        None
+        transform
     )
+    # Initialize the test dataset
     test_dataset = SignDataset(
         'Traffic Signs/valid/images',
         'Traffic Signs/valid/labels',
