@@ -10,7 +10,7 @@ To summarize, the current pipeline is as follows:
 
 - Given the prediction masks that the model outputs, seek local maxima. We hope that these maxima are the locations of signs in the original image. An example from a recent iteration of the model is displayed below.
 
-![An example prediction](example_model_eval.png)
+![An example prediction](model_eval/model_eval_26.png)
 
 A few predictions from the validation set are in the `model_eval` directory, if you'd like to peek at how it's doing right now.
 
