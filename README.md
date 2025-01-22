@@ -6,7 +6,7 @@ To summarize, the current pipeline is as follows:
 
 ![An example mask](example_mask.png)
 
-- Augment training images using [Albumentations](albumentations.ai) to make the most of the available data.
+- Augment training images using [Albumentations](https://albumentations.ai) to make the most of the available data.
 
 - Train a U-Net with only one output mask channel on the masks generated previously, with a logistic binary cross-entropy loss function. Thus the U-Net learns to output logits representing how far away the nearest sign is, with smaller logits implying that no sign is nearby, and large logits denoting a sign.
 
