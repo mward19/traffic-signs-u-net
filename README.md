@@ -6,6 +6,8 @@ To summarize, the current pipeline is as follows:
 
 ![An example mask](example_mask.png)
 
+- Augment training images to make the most of the available data.
+
 - Train a U-Net with only one output mask channel on the masks generated previously, with a logistic binary cross-entropy loss function. Thus the U-Net learns to output logits representing how far away the nearest sign is, with smaller logits implying that no sign is nearby, and large logits denoting a sign.
 
 - Given the prediction masks that the model outputs, seek local maxima. We hope that these maxima are the locations of signs in the original image. An example from a recent iteration of the model is displayed below, with white stars marking predicted sign locations.
@@ -15,7 +17,6 @@ To summarize, the current pipeline is as follows:
 A few predictions from the validation set are in the `model_eval` directory, if you'd like to peek at how it's doing right now.
 
 Next steps:
-- Data augmentation, lots of it
 - Hyperparameter optimization (or for some hyperparameters, just more intelligent ways of choosing would help. Many choices are arbitrary right now)
 - Eventually, scale to 3D and train on tomograms
 
