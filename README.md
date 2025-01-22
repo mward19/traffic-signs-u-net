@@ -8,7 +8,7 @@ To summarize, the current pipeline is as follows:
 
 - Train a U-Net with only one output mask channel on the masks generated previously, with a logistic binary cross-entropy loss function. Thus the U-Net learns to output logits representing how far away the nearest sign is, with smaller logits implying that no sign is nearby, and large logits denoting a sign.
 
-- Given the prediction masks that the model outputs, seek local maxima. We hope that these maxima are the locations of signs in the original image. An example from a recent iteration of the model is displayed below.
+- Given the prediction masks that the model outputs, seek local maxima. We hope that these maxima are the locations of signs in the original image. An example from a recent iteration of the model is displayed below, with white stars marking predicted sign locations.
 
 ![An example prediction](model_eval/model_eval_26.png)
 
